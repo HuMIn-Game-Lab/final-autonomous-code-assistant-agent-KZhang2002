@@ -1,0 +1,82 @@
+{
+    "../Code/TestCodeError2/main.cpp": [
+        {
+            "code_snippet": [
+                "",
+                "    // undeclared variable error",
+                "    int uninitialized_variable;",
+                "    int result = uninitialized_variable;",
+                ""
+            ],
+            "column_number": "5",
+            "description": "expected initializer before 'int'",
+            "error_type": "error",
+            "line_number": "11"
+        },
+        {
+            "code_snippet": [
+                "    // undeclared variable error",
+                "    int uninitialized_variable;",
+                "    int result = uninitialized_variable;",
+                "",
+                "    // undefined reference error"
+            ],
+            "column_number": "18",
+            "description": "'uninitialized_variable' was not declared in this scope",
+            "error_type": "error",
+            "line_number": "12"
+        },
+        {
+            "code_snippet": [
+                "",
+                "    // undefined reference error",
+                "    int temp = test1::add(1, 2);",
+                "    cout << \"Called test1.cpp from main. Answer: \" << temp << endl;",
+                "    return 0;"
+            ],
+            "column_number": "16",
+            "description": "'test1' has not been declared",
+            "error_type": "error",
+            "line_number": "15"
+        }
+    ],
+    "../Code/TestCodeError2/test1.cpp": [
+        {
+            "code_snippet": [
+                "bleep blorp",
+                "",
+                "#include \"test1.h\""
+            ],
+            "column_number": "1",
+            "description": "'bleep' does not name a type",
+            "error_type": "error",
+            "line_number": "1"
+        },
+        {
+            "code_snippet": [
+                "using namespace std;",
+                "",
+                "int test1::add(int a, int b) {",
+                "    int fake; //initialize unused variables to test for getting contextual lines",
+                "    int notreal;"
+            ],
+            "column_number": "5",
+            "description": "'test1' has not been declared",
+            "error_type": "error",
+            "line_number": "8"
+        },
+        {
+            "code_snippet": [
+                "    int fake; //initialize unused variables to test for getting contextual lines",
+                "    int notreal;",
+                "    aghghghhghgh",
+                "    cout << \"Add function called in test1.cpp. a = \" << a << \", b = \" << b << endl;",
+                "    int fascimle;"
+            ],
+            "column_number": "5",
+            "description": "'aghghghhghgh' was not declared in this scope",
+            "error_type": "error",
+            "line_number": "11"
+        }
+    ]
+}

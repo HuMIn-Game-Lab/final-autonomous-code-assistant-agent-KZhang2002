@@ -1,0 +1,9 @@
+{
+    "jobType": "chat",
+    "jobName": "chatTask",
+    "input" : {
+        "endpoint": "http://localhost:4891/v1/chat/completions",
+        "model": "gpt4all-falcon-q4_0.gguf",
+        "prompt": "Who is Michael Jordan?"
+    }
+}

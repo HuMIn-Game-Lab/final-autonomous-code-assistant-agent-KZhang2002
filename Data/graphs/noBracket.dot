@@ -1,0 +1,8 @@
+digraph noBracket{
+    renderJobA;
+    renderJobBSuccess -> renderJobA
+    renderJobC -> renderJobA;
+
+    renderJobD -> renderJobBSuccess;
+    renderJobBSuccess -> renderJobE [condition="success"];
+    renderJobD -> renderJobC;

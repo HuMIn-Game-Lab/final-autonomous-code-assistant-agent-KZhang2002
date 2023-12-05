@@ -1,0 +1,9 @@
+{
+    "jobType": "compile",
+    "jobChannels": "0xFFFFFFFF",
+    "jobName": "errorTest",
+    "input" : {
+        "makefileContents": "g++ -g -std=c++14 -Wconversion ./TestCodeError/*.cpp -o output",
+        "outputFileName": "errorTest"
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "jobType": "compile",
+    "jobChannels": "0xFFFFFFFF",
+    "jobName": "name",
+    "input" : {
+        "makefileContents": "make successTest",
+        "outputFileName": "successTest"
+    }
+}

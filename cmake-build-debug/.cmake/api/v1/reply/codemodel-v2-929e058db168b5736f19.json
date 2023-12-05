@@ -1,0 +1,69 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "final_autonomous_code_assistant_agent_KZhang2002",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "JobSystem::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-JobSystem-Debug-dd33fca92b3bfc324ba3.json",
+					"name" : "JobSystem",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "final_autonomous_code_assistant_agent_KZhang2002::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-final_autonomous_code_assistant_agent_KZhang2002-Debug-d090e9b01a81c562b04c.json",
+					"name" : "final_autonomous_code_assistant_agent_KZhang2002",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/CS Stuff/FoundationsOfModernComputing/final-autonomous-code-assistant-agent-KZhang2002/cmake-build-debug",
+		"source" : "C:/CS Stuff/FoundationsOfModernComputing/final-autonomous-code-assistant-agent-KZhang2002"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

@@ -1,0 +1,30 @@
+{
+    "./TestCodeError/test2.cpp": [
+        {
+            "code_snippet": [
+                "\tint total = 0;",
+                "\tvector<int> data;",
+                "\tInt error = 5;",
+                "",
+                "\tfor (int i = 0; i < 1000; i++) {"
+            ],
+            "column_number": "9",
+            "description": "'Int' was not declared in this scope; did you mean 'int'?",
+            "error_type": "error",
+            "line_number": "9"
+        },
+        {
+            "code_snippet": [
+                "\tstd::vector<int>::iterator it = data.begin();",
+                "",
+                "\tcout < \"text\" << endl;",
+                "",
+                "\tfor (; it != data.end(); ++it) {"
+            ],
+            "column_number": "23",
+            "description": "invalid operands of types 'const char [5]' and '<unresolved overloaded function type>' to binary 'operator<<'",
+            "error_type": "error",
+            "line_number": "17"
+        }
+    ]
+}

@@ -1,0 +1,4 @@
+C:/CS Stuff/FoundationsOfModernComputing/final-autonomous-code-assistant-agent-KZhang2002/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/CS Stuff/FoundationsOfModernComputing/final-autonomous-code-assistant-agent-KZhang2002/cmake-build-debug/CMakeFiles/JobSystem.dir
+C:/CS Stuff/FoundationsOfModernComputing/final-autonomous-code-assistant-agent-KZhang2002/cmake-build-debug/CMakeFiles/final_autonomous_code_assistant_agent_KZhang2002.dir
+C:/CS Stuff/FoundationsOfModernComputing/final-autonomous-code-assistant-agent-KZhang2002/cmake-build-debug/CMakeFiles/edit_cache.dir
