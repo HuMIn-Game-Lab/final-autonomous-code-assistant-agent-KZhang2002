@@ -1,0 +1,9 @@
+{
+    "input": {
+        "endpoint": "http://localhost:4891/v1/chat/completions",
+        "model": "mistral-7b-openorca.Q4_0.gguf",
+        "prompt": "\nUsing flowscript, a language based on DOT, create a graph.\n\nFlowscript Example:\ndigraph conditionalTestSuccess{\n   A;\n   B-> A;\n   C-> A;\n\n   D-> B;\n   D-> C;\n   E-> F;\n}\n\nAvailable Jobs:\ncompileJobErrorTest.json\ncompileJobSuccessTest.json\ncustomJob.json\nrenderJob.json\nrenderJobA.json\nrenderJobBfail.json\nrenderJobBsuccess.json\nrenderJobC.json\nrenderJobD.json\nrenderJobE.json\nrenderJobF.json\n\nMake a graph that executes the job \"compileJobErrorTest\". To do this, make a digraph with only one node: compileJobErrorTest. Your response should have the code and nothing else.\n"
+    },
+    "jobName": "chatJobFlow",
+    "jobType": "chat"
+}

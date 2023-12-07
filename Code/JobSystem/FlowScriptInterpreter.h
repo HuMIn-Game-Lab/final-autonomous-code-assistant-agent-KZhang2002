@@ -81,7 +81,7 @@ static const std::unordered_map<int, std::string> eMessageMap = {
 };
 
 static std::unordered_map<int, std::string> errorMap = {
-		{1, "Invalid token processed. The only valid tokens are ' { ', ' } ', ' [ ', ' ] ', ' = ', ' “ ', and words. Only words can only contain characters a-z, A-Z, 0-9, and/or underscores."},
+		{1, "Invalid token processed. The only valid tokens are ' { ', ' } ', ' [ ', ' ] ', ' = ', ' \" ', and words. Only words can only contain characters a-z, A-Z, 0-9, and/or underscores."},
 		{2, "Duplicate ‘{‘ used. Nested brackets are not allowed."},
 		{3, "Right brace has no matching left brace."},
 		{4, "Semicolons cannot be used outside of braces."},
@@ -132,6 +132,7 @@ public:
 
 	//main driver functions
 	void Interpret(std::ifstream &input);
+	void Interpret(std::string &relativePath);
 	bool Execute();
 	void RunJobs();
 
@@ -149,6 +150,7 @@ public:
 	void printLexResult();
 	void printMap();
 	bool isGood() { return e_Flag; }
+	bool hasFailed() { return e_Flag; }
 
 	std::string graphName;
 	std::string graphType;
@@ -163,8 +165,6 @@ private:
 	void e_HandleError(int lineNum, int errorCode); // for lexical
 
 	bool e_Flag      	= false;
-	int e_Row       	= -1;
-	int e_Token    		= -1;
 	std::string e_Value;
 
 	//for lex iterator
@@ -182,6 +182,8 @@ private:
 	int  i_curToken     = 0;
 
 	JobSystem* js = JobSystem::CreateOrGet();
+
+	void Reset();
 };
 
 

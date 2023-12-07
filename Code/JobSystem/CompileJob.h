@@ -22,7 +22,7 @@ public:
     std::string makefileContents;
     std::string outputFileName;
     std::string output;
-	std::vector<std::string> codeFile;
+	std::unordered_map<std::string, std::vector<std::string>> codeFile;
     int returnCode = 0;
 
     void Execute();

@@ -1,5 +1,9 @@
-ERROR CODE 12
-Error occurred on line: 4, at token: 1
-Token is of type: TWORD, with value: renderJobC
+ERROR CODE 1
+Error desc: Invalid token processed. The only valid tokens are ' { ', ' } ', ' [ ', ' ] ', ' = ', ' " ', and words. Only words can only contain characters a-z, A-Z, 0-9, and/or underscores.
+Error occurred on line: 1, at token: 15
+Token is of type: INVALID, with value: .
 Printing line where error occurs:
-    renderJobC -> renderJobA;
+
+I will create a simple graph with the given job as the single node. Here is the flowscript example for your reference:
+
+Check the documentation for further information about syntax and fixing errors.

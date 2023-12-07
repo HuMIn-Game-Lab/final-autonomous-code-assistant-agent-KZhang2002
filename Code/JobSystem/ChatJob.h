@@ -26,7 +26,7 @@ public:
     void JobCompleteCallback();
 
 private:
-    void OutputToJSON();
+    void OutputAsJSON();
 
     std::string m_jobType = "chat";
 	std::string response;

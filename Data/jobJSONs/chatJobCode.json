@@ -1,0 +1,9 @@
+{
+    "input": {
+        "endpoint": "http://localhost:4891/v1/chat/completions",
+        "model": "mistral-7b-openorca.Q4_0.gguf",
+        "prompt": "Relative Filepath: ./TestCodeError/test2.cpp\n#include <vector>\n#include <iostream>\n\nusing namespace std;\n\nvoid test3() {\n    int total = 0;\n    vector<int> data;\n    \n    for (int i = 0; i < 1000; i++) {\n        data.push_back(i);\n    }\n\n    std::vector<int>::iterator it = data.begin();\n\nIn the previous code there are the following errors:\nError on line \"14\", column \"50\":\n\t \"expected '}' at end of input\"\nError on line \"6\", column \"14\":\n\t \"to match this '{'\"\n\n Fix the code. Your response should include nothing but raw code. Do not put the code into a special format."
+    },
+    "jobName": "chatJobCode",
+    "jobType": "chat"
+}

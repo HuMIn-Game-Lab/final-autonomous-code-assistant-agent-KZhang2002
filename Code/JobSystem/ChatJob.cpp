@@ -40,6 +40,8 @@ void ChatJob::Execute() {
 
 	std::string response = Chat();
 
+	OutputAsJSON();
+
     std::cout << "Executing chat job" << std::endl;
     std::cout << "Job: " << this->GetUniqueID() << " has been executed"
               << std::endl;
@@ -53,7 +55,6 @@ size_t ChatJob::WriteCallback(void* contents, size_t size, size_t nmemb, std::st
 
 std::string ChatJob::Chat() {
 	std::string baseUrl = endpoint;
-	std::string response;
 	CURL* curl = curl_easy_init();
 
 	if (curl) {
@@ -79,7 +80,7 @@ std::string ChatJob::Chat() {
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 		CURLcode res = curl_easy_perform(curl);
 
-		std::cout << response << std::endl;
+		//std::cout << answer << std::endl;
 
 		if (res != CURLE_OK) {
 			std::cerr << "Curl request failed: " << curl_easy_strerror(res) << std::endl;
@@ -88,11 +89,14 @@ std::string ChatJob::Chat() {
 		curl_easy_cleanup(curl);
 	}
 
+
 	json jresponse = json::parse(response);
 
-	response = jresponse["choices"][0]["message"]["content"].get<std::string>();
+	std::string answer = jresponse["choices"][0]["message"]["content"].get<std::string>();
+	answer = answer.substr(prompt.length() + 2, answer.length());
+	response = answer;
 
-	return response;
+	return answer;
 }
 
 void ChatJob::JobCompleteCallback() {
@@ -104,7 +108,7 @@ void ChatJob::JobCompleteCallback() {
     }
 }
 
-void ChatJob::OutputToJSON() {
+void ChatJob::OutputAsJSON() {
     // Serialize JSON data to a std::string
     json res;
 	res["prompt"] = prompt;
@@ -115,7 +119,7 @@ void ChatJob::OutputToJSON() {
     std::string fileName = "llmOutput.json";
     std::string outputFile = outputDirectory + fileName; // Specify the relative path to the output file
     std::ofstream json_file(outputFile);
-    json_file << res;
+    json_file << res.dump(4);
     json_file.close();
 
     std::cout << "llm prompt and response sent to \"" << outputDirectory << "\"." << std::endl;

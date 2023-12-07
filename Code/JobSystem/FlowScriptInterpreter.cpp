@@ -40,6 +40,27 @@ void FlowScriptInterpreter::Interpret(std::ifstream &input) {
 	if(e_Flag) return;
 }
 
+void FlowScriptInterpreter::Interpret(std::string &relativePath) {
+	Reset();
+
+	std::ifstream input(relativePath);
+	if (input.good()) Interpret(input);
+	else std::cout << "ERROR: Given path could not be found." << std::endl;
+	input.close();
+}
+
+void FlowScriptInterpreter::Reset() {
+	graphName.clear();
+	rawCodeText.clear();
+	dependencyMap.clear();
+	existingJobs.clear();
+	lexResult.clear();
+
+	e_Flag = false;
+	e_Value.clear();
+	i_ResetIterator();
+}
+
 bool FlowScriptInterpreter::Execute() {
 	if(e_Flag) return false;
 
@@ -136,7 +157,7 @@ std::vector<token> FlowScriptInterpreter::l_LexLine(const std::string& str, int 
 
 	int currentToken = 0;
 
-    if (str.empty()) {
+    if (str.empty() || str.find_first_not_of(' ') == std::string::npos) {
         token temp(EMPTY);
         res.push_back(temp);
         return res;

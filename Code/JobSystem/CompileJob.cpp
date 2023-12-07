@@ -8,6 +8,7 @@
 #include <regex>
 #include "json.hpp"
 #include <fstream>
+#include <cmath>
 
 CompileJob::CompileJob(json input) : Job(input) {
     if (input.find("input") == input.end()) {
@@ -121,11 +122,24 @@ void CompileJob::ParseError() {
     }
 
     nlohmann::json jsonOutput;
+	for (const auto &file_errors : errors_by_file) {
+		if (file_errors.first.find("JetBrains") != std::string::npos) {
+			break;
+		}
+		std::ifstream sourceFileStream(file_errors.first);
+		std::string sourceLine;
+		int currentLineNumber = 1;
+		while (getline(sourceFileStream, sourceLine)) {
+			codeFile[file_errors.first].push_back(sourceLine);
+			currentLineNumber++;
+		}
+	}
+
+//	codeFile.push_back(sourceLine);
 
     // Convert error data to JSON using nlohmann/json
     for (const auto &file_errors : errors_by_file) {
         nlohmann::json json_errors;
-        codeFile.push_back("Relative Filepath: " + file_errors.first);
         for (const auto &error : file_errors.second) {
             nlohmann::json json_error;
             if (error.find("description") != error.end()) {
@@ -144,23 +158,15 @@ void CompileJob::ParseError() {
                 json_error["code_snippet"] = error.at("code_snippet");
             }
 
-            std::ifstream sourceFileStream(file_errors.first);
-            nlohmann::json contextLines = nlohmann::json::array();
-            std::string sourceLine;
-            int currentLineNumber = 1;
-            int targetLineNumber = stoi(error.at("line_number"));
+			nlohmann::json contextLines = nlohmann::json::array();
+			std::vector<std::string> fileCode = codeFile[file_errors.first];
+            int targetLineNumber = stoi(error.at("line_number")) - 1;
+			int currentLineNumber = fmax(targetLineNumber - 2, 0);
+			int endLineNumber = fmin(targetLineNumber + 3, fileCode.size());
 
-            while (getline(sourceFileStream, sourceLine)) {
-                if (currentLineNumber > (targetLineNumber + 2)) {
-                    break;
-                }
-
-                if (currentLineNumber >= (targetLineNumber - 2)) {
-                    contextLines.push_back(sourceLine);
-                }
-
-                currentLineNumber++;
-            }
+			for (int i = currentLineNumber; i < endLineNumber; i++) {
+				contextLines.push_back(fileCode[i]);
+			}
 
             json_error["code_snippet"] = contextLines;
 
@@ -177,7 +183,7 @@ void CompileJob::OutputToJSON() {
     std::string json_str = compilationErrors.dump(4); // Pretty-print with 4 spaces
 
     if (json_str == "null") {
-        json_str = "Files compiled successfuly. No errors found.";
+        json_str = "Files compiled successfully. No errors found.";
     }
     // Write JSON data to a file
     std::string outputDirectory = "../Data/output/";
@@ -193,9 +199,13 @@ void CompileJob::OutputToJSON() {
 	std::ofstream text_file(outputFile);
 	std::string result;
 
-	for (const std::string& line : codeFile) {
-		result += line + "\n";
+	for (const auto& file : codeFile) {
+		result += "Relative Filepath: " + file.first + "\n";
+		for (const auto& line : file.second) {
+			result += line + "\n";
+		}
 	}
+
 	//std::cout << "codefile text: " << result << std::endl;
 	text_file << result;
 	text_file.close();

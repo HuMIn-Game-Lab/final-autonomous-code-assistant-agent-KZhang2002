@@ -5,120 +5,85 @@
 #include <fstream>
 #include <sstream>
 #include <cstdio>
-#include <curl/curl.h>
-#include "openai.hpp" //remove later
 #include <filesystem>
 
 using namespace std;
 
-string writePrompt(string codeTxt, string errorText) {
+string flowPrompt(string jobName) {
 	stringstream output;
 	output <<
 	R"(
-Task: Use the error json to fix the errors in the provided code and output them in the provided format.
-Output Format:
-Error [NUM]:
-Error Type: [ERROR TYPE]
-Original Line(s):
-[ERROR CODE]
-Fixed Line(s):
-Explanation:
-[EXPLANATION/ADVICE ON HOW TO FIX CODE]
+Using flowscript, a language based on DOT, create a graph.
 
-Example:
-"main.cpp":
-[MAIN.CPP]
-Error JSON:
-[ERROR JSON FOR MAIN.CPP]
-Error 1:
-Error Type: Syntax Error
-Original Line(s):
-int missing_semicolon
-Fixed Line(s):
-int missing_semicolon;
-Explanation:
-Missing semicolon
-Error 2:
-Error Type: Linker Error
-Original Line(s):
-//#include "test1.h"
-Fixed Line(s):
-#include "test1.h"
-Explanation:
-Uncommented needed file
-Error 3:
-Error Type: Uninitialized variable
-Original Line(s):
-int uninitialized_variable;
-int result = uninitialized_variable;
-Fixed Line(s):
-[NO FIX]
-Explanation:
-uninitialized_variable needs to be given a value before being used.
-[EXAMPLE END])";
+Flowscript Example:
+digraph conditionalTestSuccess{
+   A;
+   B-> A;
+   C-> A;
 
-	//output << "Code:\n" << codeTxt;
-	output << "Errors:\n" << errorText;
+   D-> B;
+   D-> C;
+   E-> F;
+}
 
-	//cout << "Prompt output: \n" << output.str() << endl;
+Available Jobs:
+compileJobErrorTest.json
+compileJobSuccessTest.json
+customJob.json
+renderJob.json
+renderJobA.json
+renderJobBfail.json
+renderJobBsuccess.json
+renderJobC.json
+renderJobD.json
+renderJobE.json
+renderJobF.json
+
+Make a graph that executes the job ")";
+	output << jobName;
+	output << R"(.json". To do this, make a digraph with only one node: ")";
+	output << jobName;
+	output << R"(. Your response should have the code and nothing else.)";
 
 	return output.str();
 }
 
-int main (){
-//	std::filesystem::path currentPath = std::filesystem::current_path();
-//	std::cout << "Current working directory: " << currentPath.string() << std::endl;
+string writePrompt(string code, json errors) {
+	stringstream output;
+	output << code;
+	output << "\nIn the previous code there are the following errors:\n";
 
-	JobSystem* js = JobSystem::CreateOrGet();
+	for (auto file : errors) {
+		for (auto error : file) {
+			output << "Error on line " << error["line_number"];
+			output << ", column " << error["column_number"] << ":\n";
+			output << "\t " << error["description"] << "\n";
+		}
+	}
 
-	std::cout << "Creating Worker Threads" << std::endl;
+	output << "\n Fix the code. Your response should include nothing but raw code. Do not put the code into a special format.";
 
-	js -> CreateWorkerThread("Thread1", 0xFFFFFFFF);
-	js -> CreateWorkerThread("Thread2", 0xFFFFFFFF);
-	js -> CreateWorkerThread("Thread3", 0xFFFFFFFF);
-	js -> CreateWorkerThread("Thread4", 0xFFFFFFFF);
-	js -> CreateWorkerThread("Thread5", 0xFFFFFFFF);
-	js -> CreateWorkerThread("Thread6", 0xFFFFFFFF);
-	js -> CreateWorkerThread("Thread7", 0xFFFFFFFF);
-	js -> CreateWorkerThread("Thread8", 0xFFFFFFFF);
-	js -> CreateWorkerThread("Thread9", 0xFFFFFFFF);
+	return output.str();
+}
 
-	//To change the error file analyzed, change the location of the json files below. Look in the jobJSONs folder to find them.
+void pause() {
+	int running = 1;
+	while(running == 1) {
+		string command;
+		cout << "Enter any input to continue.\n";
+		cin >> command;
 
-	ifstream coj("../Data/jobJSONs/compileJobErrorTest.json");
-	if (coj.good()) js->CreateAndQueueJob(JobSystem::ReadFile(coj));
-	else cout << "File read error" << endl;
-	coj.close();
+		if (!command.empty()) {
+			running = 0;
+		}
+	}
+}
 
-	ifstream etj("../Data/output/errorTest.json");
-	string errorText((istreambuf_iterator<char>(etj)), istreambuf_iterator<char>());
-	etj.close();
-
-	ifstream chj("../Data/jobJSONs/chatJob1.json");
-	string rawText((istreambuf_iterator<char>(chj)), istreambuf_iterator<char>());
-	chj.close();
-
-	ifstream code("../Data/output/errorTestCodeFile.json");
-	string codeText((istreambuf_iterator<char>(code)), istreambuf_iterator<char>());
-	code.close();
-
-//	cout << "Chat Job: " << rawText << endl;
-
-	json chatJobJSON = json::parse(rawText);
-//	cout << "error: " << errorText << endl;
-//	cout << "chat job: " << rawText << endl;
-	string prompt = writePrompt(codeText, errorText);
-	chatJobJSON["input"]["prompt"] = prompt;
-	ofstream out("../Data/jobJSONs/chatJob1.json");
-	out << chatJobJSON.dump(4) << endl;
-	out.close();
-
-	js->CreateAndQueueJob(chatJobJSON);
-
+void pause(JobSystem* js){
 	int running = 1;
 	int curJobID = 0;
 
-	while (running) {
+	while (running == 1) {
 		string command;
 		cout << "Enter stop, start, destroy, finish, status, job status, destroyjob, or finishjob\n";
 		cin >> command;
@@ -128,12 +93,6 @@ int main (){
 		}
 		else if (command == "start") {
 			js -> Start();
-		}
-		else if (command == "destroy") {
-			js -> FinishCompletedJobs();
-			js -> Destroy();
-			running = 0;
-			break;
 		}
 		else if (command == "destroyjob") {
 			js -> DestroyJob(0);
@@ -154,13 +113,109 @@ int main (){
 			js->PrintAllJobsStatuses();
 		}
 		else {
-			cout << "Invalid Command" << endl;
+			running = 0;
+			break;
 		}
 	}
+}
 
-	js -> FinishCompletedJobs();
+int main (){
+	JobSystem* js = JobSystem::CreateOrGet();
+	string relativePathToTargetCPP = "../Code/TestCodeError/test2.cpp";
 
-	js -> Destroy();
+	std::cout << "Creating Worker Threads" << std::endl;
+
+	js -> CreateWorkerThread("Thread1", 0xFFFFFFFF);
+	js -> CreateWorkerThread("Thread2", 0xFFFFFFFF);
+	js -> CreateWorkerThread("Thread3", 0xFFFFFFFF);
+	js -> CreateWorkerThread("Thread4", 0xFFFFFFFF);
+	js -> CreateWorkerThread("Thread5", 0xFFFFFFFF);
+	js -> CreateWorkerThread("Thread6", 0xFFFFFFFF);
+	js -> CreateWorkerThread("Thread7", 0xFFFFFFFF);
+	js -> CreateWorkerThread("Thread8", 0xFFFFFFFF);
+	js -> CreateWorkerThread("Thread9", 0xFFFFFFFF);
+
+
+	ifstream chj("../Data/jobJSONs/chatJobFlow.json");
+	json chatJobJSON = json::parse(chj);
+	chj.close();
+	pause();
+	string prompt = flowPrompt("compileJobErrorTest");
+	chatJobJSON["input"]["prompt"] = prompt;
+	ofstream out("../Data/jobJSONs/chatJobFlow.json");
+	out << chatJobJSON.dump(4) << endl;
+	out.close();
+
+	js->CreateAndQueueJob(chatJobJSON);
+	pause();
+
+	ifstream llmFlowCode("../Data/output/llmOutput.json");
+	json flowCode = json::parse(llmFlowCode);
+	llmFlowCode.close();
+	string response = flowCode["response"];
+
+	string pathToDot = "../Data/graphs/llmAttempt.dot";
+	ofstream llmFlowOut(pathToDot);
+	llmFlowOut << response;
+	llmFlowOut.close();
+
+	auto* flow = new FlowScriptInterpreter(pathToDot);
+	if (flow->hasFailed()) {
+		cout << "Error processing flowscript graph." << endl;
+		return 2;
+	}
+
+	while (true) {
+		ifstream coj("../Data/jobJSONs/compileJobErrorTest.json");
+		cout << "parsing compileJob..." << endl;
+		json compileJob = json::parse(coj);
+		js->CreateAndQueueJob(compileJob);
+		pause(js);
+		coj.close();
+		//pause(js);
+
+		ifstream etj("../Data/output/errorTest.json");
+		string errorText((istreambuf_iterator<char>(etj)), istreambuf_iterator<char>());
+		if (errorText.length() > 1000) {
+			cout << "Buffer overflow" << endl;
+			break;
+		} else if (errorText == "Files compiled successfully. No errors found.") {
+			break;
+		}
+		cout << "parsing errorJSON..." << endl;
+		json errorJSON = json::parse(errorText);
+		etj.close();
+
+		ifstream errorCode("../Data/output/errorTestCodeFile.txt");
+		string faultyCode((istreambuf_iterator<char>(errorCode)), istreambuf_iterator<char>());
+		errorCode.close();
+
+		string prompt = writePrompt(faultyCode, errorJSON);
+
+		ifstream chj("../Data/jobJSONs/chatJobCode.json");
+		json chatJobCode = chatJobJSON;
+		chatJobCode["input"]["prompt"] = prompt;
+		chatJobCode["jobName"] = "chatJobCode";
+		ofstream out("../Data/jobJSONs/chatJobCode.json");
+		out << chatJobCode.dump(4) << endl;
+		out.close();
+
+		js->CreateAndQueueJob(chatJobCode);
+		pause(js);
+
+		cout << "parsing llmOutput..." << endl;
+		ifstream llmFlowCode("../Data/output/llmOutput.json");
+		json flowCodeJSON = json::parse(llmFlowCode);
+		string flowCode = flowCodeJSON["response"];
+		llmFlowCode.close();
+
+		//Put file you want to compile here
+		ofstream llmFlowOut(relativePathToTargetCPP);
+		llmFlowOut << flowCode;
+		llmFlowOut.close();
+
+		flow->Interpret(pathToDot);
+	}
 
 	return 0;
 }
