@@ -139,7 +139,7 @@ int main (){
 	ifstream chj("../Data/jobJSONs/chatJobFlow.json");
 	json chatJobJSON = json::parse(chj);
 	chj.close();
-	pause();
+	pause(js);
 	string prompt = flowPrompt("compileJobErrorTest");
 	chatJobJSON["input"]["prompt"] = prompt;
 	ofstream out("../Data/jobJSONs/chatJobFlow.json");
@@ -147,7 +147,7 @@ int main (){
 	out.close();
 
 	js->CreateAndQueueJob(chatJobJSON);
-	pause();
+	pause(js);
 
 	ifstream llmFlowCode("../Data/output/llmOutput.json");
 	json flowCode = json::parse(llmFlowCode);
@@ -172,7 +172,6 @@ int main (){
 		js->CreateAndQueueJob(compileJob);
 		pause(js);
 		coj.close();
-		//pause(js);
 
 		ifstream etj("../Data/output/errorTest.json");
 		string errorText((istreambuf_iterator<char>(etj)), istreambuf_iterator<char>());
