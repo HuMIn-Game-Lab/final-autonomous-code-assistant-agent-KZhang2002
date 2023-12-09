@@ -1,8 +1,8 @@
-# Makefile for lab_4_llm_code_analyzer_KZhang2002
+# Makefile for final_autonomous_code_assistant_agent_KZhang2002
 
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++23
+CXXFLAGS = -std=c++20
 LDFLAGS = -pthread
 
 # Directories
@@ -31,10 +31,10 @@ TARGET_EXEC = final_autonomous_code_assistant_agent_KZhang2002
 compile: $(TARGET_LIB) $(TARGET_EXEC)
 
 $(TARGET_LIB): $(JOB_SYSTEM_SRC)
-	$(CXX) -shared -o $@ $^ -I$(INCLUDE_DIR) -LCode/lib/curl/bin -lcurl -fPIC
+	$(CXX) -shared -o $@ $^ -I$(INCLUDE_DIR) -L$(LIB_DIR) -lcurl -fPIC
 
 $(TARGET_EXEC): $(MAIN_SRC)
-	$(CXX) -o $@ $^ -I$(INCLUDE_DIR) -ICode/JobSystem -I. -LCode/lib/JobSystem -lcurl -lJobSystem $(LDFLAGS)
+	$(CXX) -o $@ $^ -I$(INCLUDE_DIR) -ICode/JobSystem -I. -L. -lJobSystem -lcurl $(LDFLAGS)
 
 .PHONY: clean
 

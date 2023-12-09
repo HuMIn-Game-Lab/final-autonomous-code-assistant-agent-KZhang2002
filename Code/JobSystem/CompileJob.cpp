@@ -34,8 +34,8 @@ CompileJob::CompileJob(json input) : Job(input) {
 }
 
 void CompileJob::Execute() {
-	std::filesystem::path currentPath = std::filesystem::current_path();
-	std::cout << "Current working directory: " << currentPath.string() << std::endl;
+	//std::filesystem::path currentPath = std::filesystem::current_path();
+	//std::cout << "Current working directory: " << currentPath.string() << std::endl;
 
     std::cout << "Executing compile job" << std::endl;
     //std::cout << "Running compile" << std::endl;
